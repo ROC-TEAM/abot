@@ -100,6 +100,20 @@ namespace Abot.Crawler
             return base.Crawl(uri, cancellationTokenSource);
         }
 
+        public override void Resume()
+        {
+            base.Resume();
+
+            _domainRateLimiter.AddOrUpdateDomain(_crawlContext.RootUri, _crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds);
+        }
+
+        public override void UpdateConfig(CrawlConfiguration config)
+        {
+            base.UpdateConfig(config);
+
+            _domainRateLimiter.AddOrUpdateDomain(_crawlContext.RootUri, _crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds);
+        }
+
         protected override bool ShouldCrawlPage(PageToCrawl pageToCrawl)
         {
             bool allowedByRobots = true;

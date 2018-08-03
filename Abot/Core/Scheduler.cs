@@ -45,6 +45,8 @@ namespace Abot.Core
         /// list of known Uris.
         /// </summary>
         bool IsUriKnown(Uri uri);
+
+        bool AllowUriRecrawling { get; set; }
     }
 
     [Serializable]
@@ -55,7 +57,7 @@ namespace Abot.Core
         bool _allowUriRecrawling;
 
         public Scheduler()
-            :this(false, null, null)
+            : this(false, null, null)
         {
         }
 
@@ -70,6 +72,8 @@ namespace Abot.Core
         {
             get { return _pagesToCrawlRepo.Count(); }
         }
+
+        public bool AllowUriRecrawling { get { return _allowUriRecrawling; } set { _allowUriRecrawling = value; } }
 
         public void Add(PageToCrawl page)
         {

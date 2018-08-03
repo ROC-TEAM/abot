@@ -10,7 +10,7 @@ namespace Abot.Core
     {
         public AbotConfigurationSectionHandler()
         {
-            
+
         }
 
         [ConfigurationProperty("crawlBehavior")]
@@ -100,9 +100,13 @@ namespace Abot.Core
             dest.LoginPassword = src.LoginPassword;
         }
 
-        public static AbotConfigurationSectionHandler LoadFromXml()
+        public static AbotConfigurationSectionHandler LoadFromXml(bool needRefresh = false)
         {
-            return ((AbotConfigurationSectionHandler)System.Configuration.ConfigurationManager.GetSection("abot"));
+            if (needRefresh)
+            {
+                ConfigurationManager.RefreshSection("abot");
+            }
+            return ((AbotConfigurationSectionHandler)ConfigurationManager.GetSection("abot"));
         }
     }
 

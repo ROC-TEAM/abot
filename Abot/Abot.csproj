@@ -40,6 +40,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\Abot.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -95,6 +96,7 @@
     <Compile Include="Core\BloomFilterCrawledUrlRepository.cs" />
     <Compile Include="Core\CompactCrawledUrlRepository.cs" />
     <Compile Include="Core\AngleSharpHyperLinkParser.cs" />
+    <Compile Include="Crawler\CrawlCompletedArgs.cs" />
     <Compile Include="Crawler\RobotsDotTextParseCompletedArgs.cs" />
     <Compile Include="Poco\HttpWebResponseWrapper.cs" />
     <Compile Include="Util\BloomFilter.cs" />

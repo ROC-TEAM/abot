@@ -37,7 +37,7 @@ namespace Abot.Core
     {
         public virtual CrawlDecision ShouldCrawlPage(PageToCrawl pageToCrawl, CrawlContext crawlContext)
         {
-            if(pageToCrawl == null)
+            if (pageToCrawl == null)
                 return new CrawlDecision { Allow = false, Reason = "Null page to crawl" };
 
             if (crawlContext == null)
@@ -46,7 +46,7 @@ namespace Abot.Core
             if (pageToCrawl.RedirectedFrom != null && pageToCrawl.RedirectPosition > crawlContext.CrawlConfiguration.HttpRequestMaxAutoRedirects)
                 return new CrawlDecision { Allow = false, Reason = string.Format("HttpRequestMaxAutoRedirects limit of [{0}] has been reached", crawlContext.CrawlConfiguration.HttpRequestMaxAutoRedirects) };
 
-            if(pageToCrawl.CrawlDepth > crawlContext.CrawlConfiguration.MaxCrawlDepth)
+            if (pageToCrawl.CrawlDepth > crawlContext.CrawlConfiguration.MaxCrawlDepth)
                 return new CrawlDecision { Allow = false, Reason = "Crawl depth is above max" };
 
             if (!pageToCrawl.Uri.Scheme.StartsWith("http"))
@@ -70,7 +70,7 @@ namespace Abot.Core
                     return new CrawlDecision { Allow = false, Reason = string.Format("MaxPagesToCrawlPerDomain limit of [{0}] has been reached for domain [{1}]", crawlContext.CrawlConfiguration.MaxPagesToCrawlPerDomain, pageToCrawl.Uri.Authority) };
             }
 
-            if(!crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled && !pageToCrawl.IsInternal)
+            if (!crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled && !pageToCrawl.IsInternal)
                 return new CrawlDecision { Allow = false, Reason = "Link is external" };
 
             return new CrawlDecision { Allow = true };
@@ -79,12 +79,12 @@ namespace Abot.Core
         public virtual CrawlDecision ShouldCrawlPageLinks(CrawledPage crawledPage, CrawlContext crawlContext)
         {
             if (crawledPage == null)
-                return new CrawlDecision{Allow = false, Reason = "Null crawled page"};
+                return new CrawlDecision { Allow = false, Reason = "Null crawled page" };
 
             if (crawlContext == null)
                 return new CrawlDecision { Allow = false, Reason = "Null crawl context" };
 
-            if(string.IsNullOrWhiteSpace(crawledPage.Content.Text))
+            if (string.IsNullOrWhiteSpace(crawledPage.Content.Text))
                 return new CrawlDecision { Allow = false, Reason = "Page has no content" };
 
             if (!crawlContext.CrawlConfiguration.IsExternalPageLinksCrawlingEnabled && !crawledPage.IsInternal)
@@ -93,7 +93,7 @@ namespace Abot.Core
             if (crawledPage.CrawlDepth >= crawlContext.CrawlConfiguration.MaxCrawlDepth)
                 return new CrawlDecision { Allow = false, Reason = "Crawl depth is above max" };
 
-            return new CrawlDecision{Allow = true};
+            return new CrawlDecision { Allow = true };
         }
 
         public virtual CrawlDecision ShouldDownloadPageContent(CrawledPage crawledPage, CrawlContext crawlContext)
@@ -102,14 +102,14 @@ namespace Abot.Core
                 return new CrawlDecision { Allow = false, Reason = "Null crawled page" };
 
             if (crawlContext == null)
-                return new CrawlDecision { Allow = false, Reason = "Null crawl context" };            
+                return new CrawlDecision { Allow = false, Reason = "Null crawl context" };
 
             if (crawledPage.HttpWebResponse == null)
                 return new CrawlDecision { Allow = false, Reason = "Null HttpWebResponse" };
-            
+
             if (crawledPage.HttpWebResponse.StatusCode != HttpStatusCode.OK)
                 return new CrawlDecision { Allow = false, Reason = "HttpStatusCode is not 200" };
-            
+
             string pageContentType = crawledPage.HttpWebResponse.ContentType.ToLower().Trim();
             bool isDownloadable = false;
             List<string> cleanDownloadableContentTypes = crawlContext.CrawlConfiguration.DownloadableContentTypes
@@ -132,7 +132,7 @@ namespace Abot.Core
             if (crawlContext.CrawlConfiguration.MaxPageSizeInBytes > 0 && crawledPage.HttpWebResponse.ContentLength > crawlContext.CrawlConfiguration.MaxPageSizeInBytes)
                 return new CrawlDecision { Allow = false, Reason = string.Format("Page size of [{0}] bytes is above the max allowable of [{1}] bytes", crawledPage.HttpWebResponse.ContentLength, crawlContext.CrawlConfiguration.MaxPageSizeInBytes) };
 
-            return new CrawlDecision { Allow = true };            
+            return new CrawlDecision { Allow = true };
         }
 
         public virtual CrawlDecision ShouldRecrawlPage(CrawledPage crawledPage, CrawlContext crawlContext)
@@ -144,13 +144,15 @@ namespace Abot.Core
                 return new CrawlDecision { Allow = false, Reason = "Null crawl context" };
 
             if (crawledPage.WebException == null)
-                return new CrawlDecision { Allow = false, Reason = "WebException did not occur"};
-           
+                return new CrawlDecision { Allow = false, Reason = "WebException did not occur" };
+
+            //if (crawlContext.CrawlConfiguration.MaxRetryCount < 1)
+            //    return new CrawlDecision { Allow = false, Reason = "MaxRetryCount is less than 1" };
             if (crawlContext.CrawlConfiguration.MaxRetryCount < 1)
-                return new CrawlDecision { Allow = false, Reason = "MaxRetryCount is less than 1"};
+                return new CrawlDecision { Allow = true, Reason = "无限次重试" };
 
             if (crawledPage.RetryCount >= crawlContext.CrawlConfiguration.MaxRetryCount)
-                return new CrawlDecision {Allow = false, Reason = "MaxRetryCount has been reached"};
+                return new CrawlDecision { Allow = false, Reason = "MaxRetryCount has been reached" };
 
             return new CrawlDecision { Allow = true };
         }
